@@ -1,13 +1,13 @@
 from selenium.webdriver.common.by import By
 from scrapping.interaction import click
-from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 
 def auto_login(
-    driver: webdriver, 
+    driver: WebDriver, 
     username: str, 
     password: str
-) -> webdriver:
+) -> WebDriver:
     # Find a password input field and enter the specified password string
     password_xpath = "//input[@type='password']"
     # password_input = wait_for_element(driver, EC.presence_of_element_located((By.XPATH, password_xpath)))

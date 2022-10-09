@@ -4,6 +4,7 @@ import logging
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 GOOGLE = 'GOOGLE'
 CHROMIUM = 'CHROMIUM'
@@ -19,7 +20,7 @@ def chrome_start(
     warning_logs: bool=True,
     load_images: bool=False,
     load_js: bool=True,
-) -> webdriver:
+) -> WebDriver:
         
     
     # Only display possible problems

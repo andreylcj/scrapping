@@ -5,14 +5,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 import logging
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 
 def wait_for_element(
-    driver: webdriver, 
+    driver: WebDriver, 
     expected_conditions: EC, 
     delay: int=5, 
     verbose: bool=True
-) -> webdriver:
+) -> WebDriver:
     # expected_conditions = EC.presence_of_element_located((By.ID, 'IdOfMyElement'))
     my_elem = None
     try:
@@ -25,10 +26,10 @@ def wait_for_element(
 
 
 def open_tab(
-    driver: webdriver, 
+    driver: WebDriver, 
     url: str='',
     js: bool=True
-) -> webdriver:
+) -> WebDriver:
     try:
         driver.execute_script(f'window.open("{url}","_blank");')
         got_to_tab(driver, -1)
@@ -40,24 +41,24 @@ def open_tab(
 
 
 def got_to_tab(
-    driver: webdriver, 
+    driver: WebDriver, 
     tab_index: int=0
-) -> webdriver:
+) -> WebDriver:
     driver.switch_to.window(driver.window_handles[tab_index])
     return driver
 
 
 def go_to_page(
-    driver: webdriver, 
+    driver: WebDriver, 
     url: str
-) -> webdriver:
+) -> WebDriver:
     driver.get(url)
     return driver
 
 
 def find_element(
     query: str, 
-    driver: webdriver=None , 
+    driver: WebDriver=None , 
     reference_el: any=None, 
     by: By=By.XPATH, 
     verbose: bool=False
@@ -79,7 +80,7 @@ def find_element(
 
 def find_elements(
     query: str, 
-    driver: webdriver=None, 
+    driver: WebDriver=None, 
     reference_el: any=None, 
     by: By=By.XPATH,
     verbose: bool=False
@@ -101,7 +102,7 @@ def find_elements(
 
 def perform_click(
     element,
-    driver: webdriver=None,
+    driver: WebDriver=None,
     js: bool=False
 ) -> None:
     if js:
@@ -112,7 +113,7 @@ def perform_click(
 
 def click(
     element: any, 
-    driver: webdriver=None, 
+    driver: WebDriver=None, 
     retry: int=5, 
     js: bool=True, 
     js_when_exaust: bool=True, 
@@ -140,7 +141,7 @@ def click(
 
 def set_input_range_value(
     input_el: any, 
-    driver: webdriver, 
+    driver: WebDriver, 
     value: int
 ) -> webdriver:
     curr_val = int(input_el.get_attribute('value'))
