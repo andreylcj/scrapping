@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.webdriver.chrome.webdriver import WebDriver
 
+
 GOOGLE = 'GOOGLE'
 CHROMIUM = 'CHROMIUM'
 BRAVE = 'BRAVE'
@@ -21,7 +22,27 @@ def chrome_start(
     load_images: bool=False,
     load_js: bool=True,
 ) -> WebDriver:
+    """Start Selenium Chrome Driver
+    
+    Parameters
+    ----------
+    chrome_type : Union[GOOGLE, CHROMIUM, BRAVE, MSEDGE]
+        The chrome type will be loaded, by default GOOGLE
+    chrome_options_arguments : List[str]
+        A list of chrome options arguments, by default []
+    warning_logs : bool
+        Display logs of selenium webdriver and urllib3 in
+        warning level, by default True
+    load_images : bool
+        If images of page should be loaded, by default False    
+    load_js : bool
+        If Javascript of page should be loaded, by default True
         
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
     
     # Only display possible problems
     if warning_logs:

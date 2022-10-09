@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from selenium import webdriver
 import logging
 from selenium.webdriver.chrome.webdriver import WebDriver
 
@@ -11,15 +10,35 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 def wait_for_element(
     driver: WebDriver, 
     expected_conditions: EC, 
-    delay: int=5, 
-    verbose: bool=True
+    delay: int=5
 ) -> WebDriver:
-    # expected_conditions = EC.presence_of_element_located((By.ID, 'IdOfMyElement'))
+    """Wait for element until expected conditions were satisfied or delay time.
+
+    Parameters
+    ----------
+    driver : WebDriver
+        The Selenium WebDriver
+    expected_conditions : EC
+        Desired expected conditions to satisfy
+    delay : int, optional
+        Max waiting time in seconds until conditions 
+        were satisfied, by default 5
+
+    Returns
+    -------
+    WebDriver
+        The WebDriver
+
+    Raises
+    ------
+    TimeoutException
+        If conditions were not satisfied whithin delay time.
+    """
+    
     my_elem = None
     try:
         my_elem = WebDriverWait(driver, delay).until(expected_conditions)
-        if verbose:
-            logging.debug("Expected conditions were satisfied!")
+        logging.debug("Expected conditions were satisfied!")
     except TimeoutException:
         raise TimeoutException("Expected conditions took too much time!")
     return my_elem
@@ -27,9 +46,23 @@ def wait_for_element(
 
 def open_tab(
     driver: WebDriver, 
-    url: str='',
-    js: bool=True
+    url: str=''
 ) -> WebDriver:
+    """Open new tab using JavaScript.
+
+    Parameters
+    ----------
+    driver : WebDriver
+        Selenium WebDrive
+    url : str
+        Open tab in the desired url
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
+    
     try:
         driver.execute_script(f'window.open("{url}","_blank");')
         got_to_tab(driver, -1)
@@ -44,6 +77,22 @@ def got_to_tab(
     driver: WebDriver, 
     tab_index: int=0
 ) -> WebDriver:
+    """Go to tab by index
+
+    Parameters
+    ----------
+    driver : WebDriver
+        Selenium WebDriver
+    tab_index : int, optional
+        Index of tab, from 0 to number of opened tabs
+        minus 1, by default 0
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
+    
     driver.switch_to.window(driver.window_handles[tab_index])
     return driver
 
@@ -52,6 +101,20 @@ def go_to_page(
     driver: WebDriver, 
     url: str
 ) -> WebDriver:
+    """Open page by url
+
+    Parameters
+    ----------
+    driver : WebDriver
+        Selenium WebDriver
+    url : str
+        The desired URL page.
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
     driver.get(url)
     return driver
 
@@ -60,9 +123,34 @@ def find_element(
     query: str, 
     driver: WebDriver=None , 
     reference_el: any=None, 
-    by: By=By.XPATH, 
-    verbose: bool=False
+    by: By=By.XPATH
 ) -> any:
+    """Find element on page.
+
+    Parameters
+    ----------
+    query : str
+        The query string, often XPATH query string
+    driver : WebDriver, optional
+        Selenium Driver, by default None
+    reference_el : any, optional
+        The reference element which query will be started
+        from, by default None
+    by : By, optional
+        Search by option, by default By.XPATH
+
+    Returns
+    -------
+    any
+        If find some element, returns the result of 
+        search, else returns **None**
+
+    Raises
+    ------
+    Exception
+        If "driver" and "reference_el" is **None**
+    """
+    
     result = None
     try:
         if reference_el is not None:
@@ -72,8 +160,7 @@ def find_element(
         else:
             raise Exception('Provide "driver" or "reference_el".')
     except Exception as exc:
-        if verbose:
-            print(exc.msg)
+        logging.warning(exc.msg)
         result = None
     return result
 
@@ -82,9 +169,34 @@ def find_elements(
     query: str, 
     driver: WebDriver=None, 
     reference_el: any=None, 
-    by: By=By.XPATH,
-    verbose: bool=False
+    by: By=By.XPATH
 ) -> any:
+    """Find elements on page.
+
+    Parameters
+    ----------
+    query : str
+        The query string, often XPATH query string
+    driver : WebDriver, optional
+        Selenium Driver, by default None
+    reference_el : any, optional
+        The reference element which query will be started
+        from, by default None
+    by : By, optional
+        Search by option, by default By.XPATH
+
+    Returns
+    -------
+    any
+        If find elements, returns the result of 
+        search, else returns **None**
+
+    Raises
+    ------
+    Exception
+        If "driver" and "reference_el" is **None**
+    """
+    
     result = None
     try:
         if reference_el is not None:
@@ -94,17 +206,37 @@ def find_elements(
         else:
             raise Exception('Provide "driver" or "reference_el".')
     except Exception as exc:
-        if verbose:
-            print(exc.msg)
+        logging.warning(exc.msg)
         result = None
     return result
 
 
 def perform_click(
-    element,
+    element: any,
     driver: WebDriver=None,
     js: bool=False
 ) -> None:
+    """Perform Selenium click or Javascript click
+
+    Parameters
+    ----------
+    element : any
+        The element which will be clicked
+    driver : WebDriver, optional
+        Selenium Driver, by default None
+    js : bool, optional
+        Perform click using Javascript, by default False
+        
+    Returns
+    -------
+    None
+        **None** is returned
+        
+    """
+    
+    if js:
+        assert driver is not None, \
+            'When "js" == True, you need provide "driver"'
     if js:
         driver.execute_script("arguments[0].click();", element)
     else:
@@ -114,13 +246,34 @@ def perform_click(
 def click(
     element: any, 
     driver: WebDriver=None, 
-    retry: int=5, 
     js: bool=True, 
-    js_when_exaust: bool=True, 
-    verbose: bool=False
+    retry: int=5, 
+    js_when_exaust: bool=True
 ) -> None:
-    if js:
-        assert driver is not None, 'When "js" == True, you need provide "driver"'
+    """Click action with error handler
+
+    Parameters
+    ----------
+    element : any
+        The element which will be clicked
+    driver : WebDriver, optional
+        Selenium Driver, by default None
+    js : bool, optional
+        Perform click using Javascript, by default False
+    retry : int, optional
+        Number of times the action will be attempted, by default 5
+    js_when_exaust : bool, optional
+        When click is not being performed by 
+        Javascript ("js" == False), if True, after total number of 
+        attempts, the click will try to be performed
+        by Javascript, by default True
+
+    Raises
+    ------
+    Exception
+        When click action can not be sucessfuly executed.
+    """
+        
     retry_count = 0
     while retry_count < retry:
         try:
@@ -129,9 +282,8 @@ def click(
         except Exception as exc:
             retry_count = retry_count + 1
             msg = exc
-            if verbose:
-                print(f'retry: {retry_count}')
-                print(msg)
+            logging.debug(f'retry count: {retry_count}')
+            logging.debug(msg)
     if retry_count != float('inf'):
         if js_when_exaust and driver is not None:
             perform_click(element, driver, js=True)
@@ -143,7 +295,23 @@ def set_input_range_value(
     input_el: any, 
     driver: WebDriver, 
     value: int
-) -> webdriver:
+) -> WebDriver:
+    """Change value of slide input
+
+    Parameters
+    ----------
+    input_el : any
+        Slide input element
+    driver : WebDriver
+        Selenium WebDriver
+    value : int
+        Desired value to be placed on input
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
     curr_val = int(input_el.get_attribute('value'))
     is_right_key = value > curr_val
     if is_right_key:        

@@ -8,6 +8,22 @@ def auto_login(
     username: str, 
     password: str
 ) -> WebDriver:
+    """Perform automatic login
+
+    Parameters
+    ----------
+    driver : WebDriver
+        Selenium WebDriver
+    username : str
+        The username that will be placed on login form
+    password : str
+        The password that will be placed on password input
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
     # Find a password input field and enter the specified password string
     password_xpath = "//input[@type='password']"
     # password_input = wait_for_element(driver, EC.presence_of_element_located((By.XPATH, password_xpath)))
