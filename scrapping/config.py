@@ -20,9 +20,28 @@ def chrome_start(
     chrome_options_arguments: List[str]=[],
     warning_logs: bool=True,
     load_images: bool=False,
-    load_js: bool=True,
+    load_js: bool=True
 ) -> WebDriver:
-    """Start Selenium Chrome Driver
+    """Start Selenium Chrome Driver.
+    
+    Example
+    -------
+    Examples of Chrome Options Arguments usage:
+    
+    **Remove UI**
+    
+    - chrome_options.add_argument("--headless")
+    - chrome_options.add_argument("--no-sandbox")
+    - chrome_options.add_argument("--mute-audio")    
+    
+    **Change window size**
+    
+    - chrome_options.add_argument("--start-maximized")
+    - chrome_options.add_argument("--window-size=1920x1080")    
+    
+    **Change default download location**
+    
+    - chrome_options.add_argument("download.default_directory=C:/Downloads")
     
     Parameters
     ----------
@@ -56,13 +75,6 @@ def chrome_start(
     # chrome options arguments
     for arg in chrome_options_arguments:
         chrome_options.add_argument(arg)
-        
-    # remove UI
-    """ chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--mute-audio')
-    chrome_options.add_argument("--start-maximized")
-    chrome_options.add_argument("--window-size=1920x1080") """
 
     ### This blocks images and javascript requests
     chrome_prefs = { "profile.default_content_setting_values": {} }

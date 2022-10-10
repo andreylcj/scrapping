@@ -1,15 +1,17 @@
+from typing import List
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ExpectedConditions
 from selenium.common.exceptions import TimeoutException
 import logging
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 def wait_for_element(
     driver: WebDriver, 
-    expected_conditions: EC, 
+    expected_conditions: ExpectedConditions,
     delay: int=5
 ) -> WebDriver:
     """Wait for element until expected conditions were satisfied or delay time.
@@ -18,8 +20,8 @@ def wait_for_element(
     ----------
     driver : WebDriver
         The Selenium WebDriver
-    expected_conditions : EC
-        Desired expected conditions to satisfy
+    expected_conditions : FunctionType
+        Desired expected conditions to be satisfied
     delay : int, optional
         Max waiting time in seconds until conditions 
         were satisfied, by default 5
@@ -44,6 +46,25 @@ def wait_for_element(
     return my_elem
 
 
+def close_current_tab(
+    driver: WebDriver
+) -> WebDriver:
+    """Close current tab of Browser;
+
+    Parameters
+    ----------
+    driver : WebDriver
+        Selenium WebDriver
+
+    Returns
+    -------
+    WebDriver
+        Selenium WebDriver
+    """
+    driver.close()
+    return driver
+
+
 def open_tab(
     driver: WebDriver, 
     url: str=''
@@ -65,15 +86,15 @@ def open_tab(
     
     try:
         driver.execute_script(f'window.open("{url}","_blank");')
-        got_to_tab(driver, -1)
+        go_to_tab(driver, -1)
     except:
-        got_to_tab(driver, 0)
+        go_to_tab(driver, 0)
         driver.execute_script(f'window.open("{url}","_blank");')
-        got_to_tab(driver, -1)
+        go_to_tab(driver, -1)
     return driver
 
 
-def got_to_tab(
+def go_to_tab(
     driver: WebDriver, 
     tab_index: int=0
 ) -> WebDriver:
@@ -121,10 +142,10 @@ def go_to_page(
 
 def find_element(
     query: str, 
-    driver: WebDriver=None , 
-    reference_el: any=None, 
+    driver: WebDriver=None, 
+    reference_el: WebElement=None, 
     by: By=By.XPATH
-) -> any:
+) -> WebElement:
     """Find element on page.
 
     Parameters
@@ -133,7 +154,7 @@ def find_element(
         The query string, often XPATH query string
     driver : WebDriver, optional
         Selenium Driver, by default None
-    reference_el : any, optional
+    reference_el : WebElement, optional
         The reference element which query will be started
         from, by default None
     by : By, optional
@@ -141,7 +162,7 @@ def find_element(
 
     Returns
     -------
-    any
+    WebElement
         If find some element, returns the result of 
         search, else returns **None**
 
@@ -170,7 +191,7 @@ def find_elements(
     driver: WebDriver=None, 
     reference_el: any=None, 
     by: By=By.XPATH
-) -> any:
+) -> List[WebElement]:
     """Find elements on page.
 
     Parameters
@@ -179,7 +200,7 @@ def find_elements(
         The query string, often XPATH query string
     driver : WebDriver, optional
         Selenium Driver, by default None
-    reference_el : any, optional
+    reference_el : WebElement, optional
         The reference element which query will be started
         from, by default None
     by : By, optional
@@ -187,7 +208,7 @@ def find_elements(
 
     Returns
     -------
-    any
+    List[WebElement]
         If find elements, returns the result of 
         search, else returns **None**
 
@@ -212,7 +233,7 @@ def find_elements(
 
 
 def perform_click(
-    element: any,
+    element: WebElement,
     driver: WebDriver=None,
     js: bool=False
 ) -> None:
@@ -220,7 +241,7 @@ def perform_click(
 
     Parameters
     ----------
-    element : any
+    element : WebElement
         The element which will be clicked
     driver : WebDriver, optional
         Selenium Driver, by default None
@@ -244,7 +265,7 @@ def perform_click(
 
 
 def click(
-    element: any, 
+    element: WebElement, 
     driver: WebDriver=None, 
     js: bool=True, 
     retry: int=5, 
@@ -254,12 +275,12 @@ def click(
 
     Parameters
     ----------
-    element : any
+    element : WebElement
         The element which will be clicked
     driver : WebDriver, optional
         Selenium Driver, by default None
     js : bool, optional
-        Perform click using Javascript, by default False
+        Perform click using Javascript, by default True
     retry : int, optional
         Number of times the action will be attempted, by default 5
     js_when_exaust : bool, optional
@@ -292,7 +313,7 @@ def click(
 
 
 def set_input_range_value(
-    input_el: any, 
+    input_slide_element: WebElement, 
     driver: WebDriver, 
     value: int
 ) -> WebDriver:
@@ -300,7 +321,7 @@ def set_input_range_value(
 
     Parameters
     ----------
-    input_el : any
+    input_slide_element : WebElement
         Slide input element
     driver : WebDriver
         Selenium WebDriver
@@ -312,18 +333,18 @@ def set_input_range_value(
     WebDriver
         Selenium WebDriver
     """
-    curr_val = int(input_el.get_attribute('value'))
+    curr_val = int(input_slide_element.get_attribute('value'))
     is_right_key = value > curr_val
     if is_right_key:        
-        max_val = int(input_el.get_attribute('max'))
+        max_val = int(input_slide_element.get_attribute('max'))
         max_val = max(value, max_val)
         for i in range(max_val - curr_val):
-            input_el.send_keys(Keys.RIGHT)
+            input_slide_element.send_keys(Keys.RIGHT)
     else:
-        min_val = int(input_el.get_attribute('min'))
+        min_val = int(input_slide_element.get_attribute('min'))
         min_val = min(value, min_val)
         for i in range(curr_val, min_val, -1):
-            input_el.send_keys(Keys.LEFT)
+            input_slide_element.send_keys(Keys.LEFT)
     return driver
 
 
